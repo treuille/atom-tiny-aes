@@ -1,6 +1,7 @@
-# tiny-aes Package for [Atom](atom.io)
+# tiny-aes Package for Atom
 
-Enables AES encryption and decryption of text as in the TextMate text bundle.
+Enables AES encryption and decryption of text in [Atom](atom.io), similar
+to the TextMate "text" bundle.
 
 Currently, this package depends on the OSX command line, but the goal is eventually to write everything in pure Javascript.
 
