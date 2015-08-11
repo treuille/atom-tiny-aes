@@ -2,7 +2,8 @@
   "name": "tiny-aes",
   "main": "./lib/tiny-aes",
   "version": "0.0.0",
-  "description": "A short description of your package",
+  "description":
+    "Allows encryption and decryption of text as in the TextMate text package.",
   "keywords": [
   ],
   "activationCommands": {
@@ -12,7 +13,7 @@
       "tiny-aes:decrypt"
     ]
   },
-  "repository": "https://github.com/atom/tiny-aes",
+  "repository": "https://github.com/AdrienTreuille/atom-tiny-aes",
   "license": "MIT",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
