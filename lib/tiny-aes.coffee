@@ -33,8 +33,7 @@ passwordDialog = (prompt) ->
     Promise.reject Error 'Cancelled.'
 
 # The current selection or selects everything.
-# Return an error if there's truly nothing to select.
-getCurrentSelectionOrEverything = () ->
+getSelectionOrEverything =  ->
   editor = atom.workspace.getActiveTextEditor()
   selection = editor.getLastSelection()
   selection.selectAll() if selection.isEmpty()
@@ -68,7 +67,6 @@ module.exports = TinyAes =
     @tinyAesView.destroy()
 
   serialize: ->
-    tinyAesViewState: @tinyAesView.serialize()
 
   toggle: ->
     console.log 'TinyAes was toggled!'
@@ -79,7 +77,7 @@ module.exports = TinyAes =
       @modalPanel.show()
 
   encrypt: ->
-    selection = getCurrentSelectionOrEverything()
+    selection = getSelectionOrEverything()
     passwords = []
     passwordDialog 'Enter password:'
     .then (pw) ->
@@ -98,7 +96,7 @@ module.exports = TinyAes =
       atom.notifications.addWarning err.message
 
   decrypt: ->
-    selection = getCurrentSelectionOrEverything()
+    selection = getSelectionOrEverything()
     passwordDialog 'Enter decryption password:'
     .then (pw) ->
       script = "openssl enc -d -aes128 -base64 -pass \"pass:#{pw}\""
