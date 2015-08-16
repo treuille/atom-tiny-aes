@@ -1,4 +1,4 @@
-asjdfa$ = require('jquery')
+$ = require('jquery')
 
 module.exports =
   PasswordDialogView: class PasswordDialogView
@@ -6,11 +6,14 @@ module.exports =
     # type - either 'encrypt' or 'decrypt'
     # workspace - where to add the modal panel containing this
     constructor: (@workspace, @type) ->
+      # no password has been requested
+      @promise = null
+
       # create the html element
-      @element = $('<div class="tiny-aes-view">')
+      @element = $ '<div class="tiny-aes-view">'
       labels = switch @type
-        when 'encrypt' then ['Password:']
-        when 'decrypt' then ['Password:', 'Retype Password:']
+        when 'encrypt' then ['Password:', 'Retype Password:']
+        when 'decrypt' then ['Password:']
         else throw Error('Type must be "encrypt" or "decrypt".')
       for index, label of labels
         @element.append $('<div class="password-input-row">').append $ """
@@ -20,83 +23,73 @@ module.exports =
 
       # add the element to the workspace
       @panel = @workspace.addModalPanel item: @element, visible: false
-      @panel.onDidChangeVisible (becameVisible) ->
-        console.log "onDidChangeVibible #{becameVisible}"
 
-      # # a tiny html element generator
-      # el = (type, attr, children...) ->
-      #   console.log "el type:#{type} attr:#{attr} children:#{children}"
-      #   element = document.createElement type
-      #   for key, value of attr
-      #     console.log "setting attribute '#{key}':'#{value}'"
-      #     element.setAttribute key, value
-      #   console.log 'finished setting atributes'
-      #   for child in children
-      #     if typeof child is 'string'
-      #       element.innerHTML = child
-      #     else
-      #       element.appendChild child
-      #   return element
+      # wire in some event handlers
+      @panel.onDidChangeVisible (visible) => @onVisibilityChange visible
+      @element.find('.password-input').keydown (event) => @onKeydown event
 
-        # if children = contents?() # contents == function
-        #   console.log "el #{type} #{htmlClass}"
-        #   console.log children
-        #   console.log(child) for child in children
-        #
-        # else if contents? # contents was a string with the text
-        #   element.innerHTML = contents
-        # return element
-
-      # @element = el('div', class:'tiny-aes-view',
-      #   el('div', class:'password-input-row',
-      #     el('span', class:'password-label', 'Password:'),
-      #     el('input', class:'password-input', type:'password')
-      #   ),
-      #   el('div', class:'password-input-row',
-      #     el('span', class:'password-label', 'Retype Password:'),
-      #     el('input', class:'password-input', type:'password')
-      #   )
-      # )
-      # #   el 'div', class:'password-input-row', [
-      #   ]
-      # ]
-
-      #  -> [
-      #
-      #     (),
-      #     ()
-      #   ]
-      # ]
-
-      # html = """
-      # <div class="tiny-aes-view">
-      #   <div class="password-input-row">
-      #     <span class="password-label">
-      #       Password:
-      #     </span>
-      #     <input class="password-input" id="password-1" type="password">
-      #   </div>
-      #   <div class="password-input-row">
-      #     <span class="password-label">
-      #       Retype Password:
-      #     </span>
-      #     <input class="password-input" id="password-2" type="password">
-      #   </div>
-      # </div>
-      # """
-
-
-
-    # Returns an object that can be retrieved when package is activated
+    # Returns an object that can be retrieved when package is activated.
     serialize: ->
 
-    # Tear down any state and detach
+    # Tear down any state and detach.
     destroy: ->
       @element.remove()
       @panel.destroy()
 
-    show: -> @panel.show()
+    # Returns a promise of the password.
+    requestPassword: ->
+      if @promise?
+        throw Error 'Cannot request promise twice.'
+      @panel.show()
+      @promise = new Promise (resolve, reject) => setImmediate =>
+        @promise.resolve = resolve
+        @promise.reject = reject
 
-    hide: -> @panel.hide()
+    # Submits the password and closes the panel.
+    submit: ->
+      {resolve,reject} = @removePromise()
+      # get the password and hide the panel
+      passwords = ($(el).val() for el in @element.find 'input')
+      @panel.hide()
 
-    isVisible: -> @panel.isVisible()
+      # check if passwords match and returning
+      if (@type is 'encrypt') and (passwords[0] != passwords[1])
+        reject Error "Passwords don't match."
+      else
+        resolve passwords[0]
+
+    # Closes the panel without submitting the password.
+    cancel: ->
+      # remove the promise
+      {resolve,reject} = @removePromise()
+      @panel.hide()
+      reject Error 'Cancelled.'
+
+    # Places focus on the named element in the panel.
+    focus: (id) ->
+      @element.find("\##{id}").focus()
+
+    # Called when panel visibiliy changes.
+    onVisibilityChange: (becameVisible) ->
+      if becameVisible
+        @focus 'pw0' # focus on the first input
+      else
+        @element.find('.password-input').val('') # clear inputs
+        $(atom.views.getView(atom.workspace)).focus() # focus the editor
+
+    onKeydown: (event) ->
+      id = $(event.target).attr 'id'
+      switch event.keyCode
+        when 9 # TAB
+          if id is 'pw1' then @focus 'pw0'
+        when 13 # ENTER
+          if (@type is 'decrypt') or (id is 'pw1') then @submit()
+          else @focus 'pw1'
+        when 27 # ESCAPE
+          @cancel()
+
+    # Removes (and returns) the promise.
+    removePromise: ->
+      unless @promise? then throw Error 'No promise to remove.'
+      [p, @promise] = [@promise, null]
+      return p

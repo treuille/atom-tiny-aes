@@ -7,9 +7,6 @@
 
 # For more detailed documentation see
 # https://atom.io/docs/latest/behind-atom-keymaps-in-depth
-'atom-workspace':
-  'ctrl-alt-o': 'tiny-aes:toggle'
-
 'atom-text-editor':
   'ctrl-cmd-shift-e': 'tiny-aes:encrypt'
   'ctrl-cmd-shift-d': 'tiny-aes:decrypt'

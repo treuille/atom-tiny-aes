@@ -18,9 +18,7 @@ TinyAES =
     # cleaned up with a CompositeDisposable
     @subscriptions = new CompositeDisposable
 
-    # Register command that toggles this view
-    @subscriptions.add atom.commands.add 'atom-workspace',
-      'tiny-aes:toggle': => @toggle()
+    # Register encryption / decryption commands.
     @subscriptions.add atom.commands.add 'atom-text-editor',
       'tiny-aes:encrypt': => @encrypt()
     @subscriptions.add atom.commands.add 'atom-text-editor',
@@ -33,40 +31,23 @@ TinyAES =
 
   serialize: ->
 
-  toggle: ->
-    console.log 'TinyAes was toggled!'
-
-    if @decryptView.isVisible()
-      @decryptView.hide()
-    else
-      @decryptView.show()
-      # @tinyAesView.getElement().find('atom-text-editor').focus()
-      # console.log 'THIS IS THE MODEL'
-      # console.log  @tinyAesView.getElement().find('atom-text-editor')[0].getModel()
-
   encrypt: ->
     selection = @getSelectionOrEverything()
-    passwords = []
-    @passwordDialog 'Enter password:'
+    @encryptView.requestPassword()
     .then (pw) =>
-      passwords.push pw
-      @passwordDialog 'Repeat encryption password:'
-    .then (pw) =>
-      passwords.push pw
-      if passwords[0] != passwords[1]
-        return Promise.reject Error "Passwords don't match."
       script = "openssl enc -e -aes128 -base64 -pass \"pass:#{pw}\""
       @exec script, input: selection.getText()
     .then (cyphertext) =>
       selection.insertText cyphertext, select:yes
     .catch (err) =>
-      console.log err.stack
       console.log err
+      return if err.message == "Cancelled."
+      console.log err.stack
       atom.notifications.addWarning err.message
 
   decrypt: ->
     selection = @getSelectionOrEverything()
-    @passwordDialog 'Enter decryption password:'
+    @decryptView.requestPassword()
     .then (pw) =>
       script = "openssl enc -d -aes128 -base64 -pass \"pass:#{pw}\""
       @exec script, input: selection.getText()
@@ -75,6 +56,8 @@ TinyAES =
       selection.insertText cleartext, select:yes
     .catch (err) =>
       console.log err
+      return if err.message == "Cancelled."
+      console.log err.stack
       atom.notifications.addWarning err.message
 
   # Execute something on the command line, returning a promise.
@@ -88,21 +71,6 @@ TinyAES =
         if err then reject err else resolve stdout
       child.stdin.write(options?.input ? '')
       child.stdin.end()
-
-  # Creates a passowrd dialog, returning a promise.
-  passwordDialog: (prompt) ->
-    script = """osascript -e '
-      display dialog "#{prompt}" \
-        hidden answer true \
-        default answer ""'"""
-    @exec script
-    .then ((result) ->
-      resultRegex = /button\ returned\:OK\,\ text\ returned\:(.*)/
-      if match = result.match resultRegex
-        return match[1] # return the password
-      else Promise.reject Error "Cannot parse: #{result}"
-    ), (err) ->
-      Promise.reject Error 'Cancelled.'
 
   # The current selection or selects everything.
   getSelectionOrEverything: ->

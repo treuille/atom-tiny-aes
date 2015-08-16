@@ -7,22 +7,6 @@ Currently, this package depends on the OSX command line, but the goal is eventua
 
 ### Todo
 
-- make it programmable in terms of number of rows
-- handle
-  - focus
-  - escape
-  - tab
-  - closing
-- attach it to decrypt
-- handle input finished - promise
-- get rid of toggle
-- handle
-  - focus
-  - escape
-  - tab
-  - next elements
-- start writing specs for the new thing
-- branch it to start working on the dialog box
-- use javascript-compatiable aes library
+- use pure javascript implimenation of AES
 
 ![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)

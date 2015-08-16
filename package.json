@@ -7,7 +7,6 @@
   "keywords": [
   ],
   "activationCommands": {
-    "atom-workspace": "tiny-aes:toggle",
     "atom-text-editor": [
       "tiny-aes:encrypt",
       "tiny-aes:decrypt"

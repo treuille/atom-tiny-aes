@@ -2,20 +2,28 @@
 'context-menu':
   'atom-text-editor': [
     {
-      'label': 'Toggle tiny-aes'
-      'command': 'tiny-aes:toggle'
+      'label': 'Tiny AES: Encrypt'
+      'command': 'tiny-aes:encrypt'
+    },
+    {
+      'label': 'Tiny AES: Decrypt'
+      'command': 'tiny-aes:decrypt'
     }
   ]
 'menu': [
   {
     'label': 'Packages'
     'submenu': [
-      'label': 'tiny-aes'
+      'label': 'Tiny AES'
       'submenu': [
         {
-          'label': 'Toggle'
-          'command': 'tiny-aes:toggle'
-        }
+          'label': 'Encrypt'
+          'command': 'tiny-aes:encrypt'
+        },
+        {
+          'label': 'Decrypt'
+          'command': 'tiny-aes:decrypt'
+        },
       ]
     ]
   }
