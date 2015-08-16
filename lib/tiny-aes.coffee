@@ -1,5 +1,6 @@
 {PasswordDialogView} = require './tiny-aes-view'
 {CompositeDisposable} = require 'atom'
+CryptoJS = require 'crypto-js'
 
 ####################
 # Helper Functions #
@@ -31,14 +32,31 @@ TinyAES =
 
   serialize: ->
 
+  testCryptoJS: ->
+    throw Error('Test code. Not to be executed.')
+
+    test = 'U2FsdGVkX18uek1T+johJh6pyZv2ddks8hLbEnUbGwo=' # key:123 (256 bit)
+    test = 'U2FsdGVkX183PJoMKqzwQKh9jcXjReUo+MS5HCU0fV4=\n' # key:123 (128 bit)
+    iv=CryptoJS.enc.Hex.parse("00000000000000000000000000000000")
+    key = CryptoJS.EvpKDF '123', iv, keySize:128/32
+    # key = CryptoJS.lib.WordArray.random(4);
+    console.log "128-bit key: #{key.toString(CryptoJS.enc.Base64)}"
+    console.log key
+    answer = CryptoJS.AES.decrypt test, key, iv:iv
+    console.log "Test: #{test}"
+    console.log "Answer: #{answer}"
+    console.log answer.toString(CryptoJS.enc.Latin1)
+    return
+
   encrypt: ->
     selection = @getSelectionOrEverything()
     @encryptView.requestPassword()
     .then (pw) =>
       script = "openssl enc -e -aes128 -base64 -pass \"pass:#{pw}\""
       @exec script, input: selection.getText()
-    .then (cyphertext) =>
-      selection.insertText cyphertext, select:yes
+    .then (ciphertext) =>
+      selection.insertText ciphertext, select:yes
+      console.log "Inserted the ciphertext."
     .catch (err) =>
       console.log err
       return if err.message == "Cancelled."

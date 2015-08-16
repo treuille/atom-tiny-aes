@@ -1,7 +1,7 @@
 {
   "name": "tiny-aes",
   "main": "./lib/tiny-aes",
-  "version": "0.0.0",
+  "version": "0.2.0",
   "description":
     "Allows encryption and decryption of text as in the TextMate text package.",
   "keywords": [
@@ -18,6 +18,7 @@
     "atom": ">=1.0.0 <2.0.0"
   },
   "dependencies": {
-    "jquery": "^2.1.3"
+    "jquery": ">=2.1.4 <3.0.0",
+    "crypto-js": ">=3.1.5 <4.0.0"
   }
 }

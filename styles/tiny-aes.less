@@ -6,16 +6,25 @@
 
 .tiny-aes-view {
   .password-input-row {
+    margin-top: 5px;
+
     .password-label {
       float: left;
       text-align: right;
       width: 100px;
       margin-right: 5px;
-      margin-top: 3px;
+      margin-top: 5px;
+      font-family: @font-family;
     }
 
     .password-input {
-      width: 420px;
+      width: 370px;
+      background-color: lighten(@input-background-color, 10%);
+      border: 1px solid @input-border-color;
+      font-size: @input-font-size;
+      font-family: @font-family;
+      padding-left: 5px;
+      padding-right: 5px;
     }
   }
 }

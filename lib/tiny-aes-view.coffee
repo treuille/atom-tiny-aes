@@ -47,20 +47,21 @@ module.exports =
 
     # Submits the password and closes the panel.
     submit: ->
+      # get the promise
       {resolve,reject} = @removePromise()
+
       # get the password and hide the panel
       passwords = ($(el).val() for el in @element.find 'input')
       @panel.hide()
 
       # check if passwords match and returning
       if (@type is 'encrypt') and (passwords[0] != passwords[1])
-        reject Error "Passwords don't match."
+        reject Error "Passwords mismatch."
       else
         resolve passwords[0]
 
     # Closes the panel without submitting the password.
     cancel: ->
-      # remove the promise
       {resolve,reject} = @removePromise()
       @panel.hide()
       reject Error 'Cancelled.'

@@ -8,5 +8,8 @@ Currently, this package depends on the OSX command line, but the goal is eventua
 ### Todo
 
 - use pure javascript implimenation of AES
+- rename the package
+- put in a screenshot
+- put in some testing
 
 ![A screenshot of your package](https://f.cloud.github.com/assets/69169/2290250/c35d867a-a017-11e3-86be-cd7c5bf3ff9b.gif)
