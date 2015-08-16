@@ -1,4 +1,4 @@
-TinyAesView = require './tiny-aes-view'
+{PasswordDialogView} = require './tiny-aes-view'
 {CompositeDisposable} = require 'atom'
 
 ####################
@@ -6,14 +6,13 @@ TinyAesView = require './tiny-aes-view'
 ####################
 
 TinyAES =
-  tinyAesView: null
-  modalPanel: null
   subscriptions: null
+  encryptView: null
+  decryptView: null
 
   activate: (state) ->
-    @tinyAesView = new TinyAesView(state.tinyAesViewState)
-    @modalPanel = atom.workspace.addModalPanel
-      item: @tinyAesView.getElement(), visible: false
+    @encryptView = new PasswordDialogView atom.workspace, 'encrypt'
+    @decryptView = new PasswordDialogView atom.workspace, 'decrypt'
 
     # Events subscribed to in atom's system can be easily
     # cleaned up with a CompositeDisposable
@@ -28,19 +27,22 @@ TinyAES =
       'tiny-aes:decrypt': => @decrypt()
 
   deactivate: ->
-    @modalPanel.destroy()
     @subscriptions.dispose()
-    @tinyAesView.destroy()
+    @encryptView.destroy()
+    @decryptView.destroy()
 
   serialize: ->
 
   toggle: ->
     console.log 'TinyAes was toggled!'
 
-    if @modalPanel.isVisible()
-      @modalPanel.hide()
+    if @decryptView.isVisible()
+      @decryptView.hide()
     else
-      @modalPanel.show()
+      @decryptView.show()
+      # @tinyAesView.getElement().find('atom-text-editor').focus()
+      # console.log 'THIS IS THE MODEL'
+      # console.log  @tinyAesView.getElement().find('atom-text-editor')[0].getModel()
 
   encrypt: ->
     selection = @getSelectionOrEverything()
