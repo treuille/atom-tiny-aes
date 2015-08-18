@@ -1,7 +1,7 @@
 {
   "name": "tiny-aes",
   "main": "./lib/tiny-aes",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description":
     "Allows encryption and decryption of text as in the TextMate text package.",
   "keywords": [
