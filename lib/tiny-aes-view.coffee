@@ -15,7 +15,7 @@ module.exports =
         when 'decrypt' then ['Password:']
         else throw Error('Type must be "encrypt" or "decrypt".')
       for index, label of labels
-        row = $("<div class=\"password-input-row\" id=\"row#{index}\">")
+        row = $ "<div class=\"password-input-row\" id=\"row#{index}\">"
         @element.append row.append $ """
           <span class="password-label">#{label}</span>
           <input class="password-input" id="pw#{index}", type="password">
