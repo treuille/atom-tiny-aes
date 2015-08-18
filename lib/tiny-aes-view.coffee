@@ -4,8 +4,7 @@ module.exports =
   PasswordDialogView: class PasswordDialogView
     # Constructs a PasswordDialogView.
     # type - either 'encrypt' or 'decrypt'
-    # workspace - where to add the modal panel containing this
-    constructor: (@workspace, @type) ->
+    constructor: (@type) ->
       # no password has been requested
       @promise = null
 
@@ -16,13 +15,14 @@ module.exports =
         when 'decrypt' then ['Password:']
         else throw Error('Type must be "encrypt" or "decrypt".')
       for index, label of labels
-        @element.append $('<div class="password-input-row">').append $ """
+        row = $("<div class=\"password-input-row\" id=\"row#{index}\">")
+        @element.append row.append $ """
           <span class="password-label">#{label}</span>
           <input class="password-input" id="pw#{index}", type="password">
         """
 
       # add the element to the workspace
-      @panel = @workspace.addModalPanel item: @element, visible: false
+      @panel = atom.workspace.addModalPanel item: @element, visible: false
 
       # wire in some event handlers
       @panel.onDidChangeVisible (visible) => @onVisibilityChange visible
@@ -56,7 +56,7 @@ module.exports =
 
       # check if passwords match and returning
       if (@type is 'encrypt') and (passwords[0] != passwords[1])
-        reject Error "Passwords mismatch."
+        reject Error "Password mismatch."
       else
         resolve passwords[0]
 

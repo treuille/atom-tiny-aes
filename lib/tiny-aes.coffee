@@ -12,8 +12,8 @@ TinyAES =
   decryptView: null
 
   activate: (state) ->
-    @encryptView = new PasswordDialogView atom.workspace, 'encrypt'
-    @decryptView = new PasswordDialogView atom.workspace, 'decrypt'
+    @encryptView = new PasswordDialogView 'encrypt'
+    @decryptView = new PasswordDialogView 'decrypt'
 
     # Events subscribed to in atom's system can be easily
     # cleaned up with a CompositeDisposable
@@ -33,14 +33,14 @@ TinyAES =
   serialize: ->
 
   testCryptoJS: ->
-    throw Error('Test code. Not to be executed.')
+    # throw Error('Test code. Not to be executed.')
 
     test = 'U2FsdGVkX18uek1T+johJh6pyZv2ddks8hLbEnUbGwo=' # key:123 (256 bit)
     test = 'U2FsdGVkX183PJoMKqzwQKh9jcXjReUo+MS5HCU0fV4=\n' # key:123 (128 bit)
     iv=CryptoJS.enc.Hex.parse("00000000000000000000000000000000")
-    key = CryptoJS.EvpKDF '123', iv, keySize:128/32
+    key = CryptoJS.EvpKDF '123'
     # key = CryptoJS.lib.WordArray.random(4);
-    console.log "128-bit key: #{key.toString(CryptoJS.enc.Base64)}"
+    console.log "128-bit key: #{key.toString(CryptoJS.enc.Hex)}"
     console.log key
     answer = CryptoJS.AES.decrypt test, key, iv:iv
     console.log "Test: #{test}"
@@ -56,12 +56,10 @@ TinyAES =
       @exec script, input: selection.getText()
     .then (ciphertext) =>
       selection.insertText ciphertext, select:yes
-      console.log "Inserted the ciphertext."
     .catch (err) =>
-      console.log err
-      return if err.message == "Cancelled."
-      console.log err.stack
-      atom.notifications.addWarning err.message
+      if err.message isnt "Cancelled."
+        console.log err.stack
+        atom.notifications.addWarning err.message
 
   decrypt: ->
     selection = @getSelectionOrEverything()
@@ -73,10 +71,9 @@ TinyAES =
     .then (cleartext) =>
       selection.insertText cleartext, select:yes
     .catch (err) =>
-      console.log err
-      return if err.message == "Cancelled."
-      console.log err.stack
-      atom.notifications.addWarning err.message
+      if err.message isnt "Cancelled."
+        console.log err.stack
+        atom.notifications.addWarning err.message
 
   # Execute something on the command line, returning a promise.
   # cmd: (string) the cmd to execute
