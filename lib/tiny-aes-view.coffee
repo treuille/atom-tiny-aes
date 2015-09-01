@@ -79,8 +79,11 @@ module.exports =
         $(atom.views.getView(atom.workspace)).focus() # focus the editor
 
     onKeydown: (event) ->
+
       id = $(event.target).attr 'id'
       switch event.keyCode
+        when 8 # DELETE
+          @element.find("\##{id}").val('')
         when 9 # TAB
           if id is 'pw1' then @focus 'pw0'
         when 13 # ENTER
